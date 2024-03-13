@@ -1,0 +1,10 @@
+CREATE OR REPLACE PROCEDURE UpdateProductDescription(
+  idProduct IN NUMBER,
+  newDescription IN VARCHAR2
+) AS
+BEGIN
+  UPDATE BB_product
+  SET DESCRIPTION = newDescription
+  WHERE IDPRODUCT = idProduct;
+END;
+/

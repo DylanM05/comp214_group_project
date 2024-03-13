@@ -32,6 +32,8 @@
 }
 
 .right-side {
+  display: grid; 
+  place-items: center; 
   flex-grow: 1;
   padding: 20px;
 }
@@ -54,7 +56,13 @@
 .edit-form {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 65%;
+  margin: 0 auto;
+}
+
+.edit-form input {
+  height: 50px;
+  margin-bottom: 20px; 
 }
 
 .prod-id {
@@ -62,6 +70,8 @@
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  height: 50px;
+  width: 20%;
 }
 .new-disc {
   padding: 10px;

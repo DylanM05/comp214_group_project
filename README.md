@@ -33,3 +33,5 @@ Server then sends the applicable SQL request for the API request. from server.js
 App.js imports and calls components from /components in order to have reusable components and keep everything organized
 ![alt text](image-2.png)
 ![alt text](image-3.png)
+
+Saved procedures are saved in "procedures.txt" incase you would like to run it off of your own database.

@@ -25,19 +25,56 @@ run();
 
 // Use express.json() middleware to parse JSON bodies
 app.use(express.json());
+
 // Create a route to handle the POST request
 app.post('/api/updateProductDescription', cors(), async (req, res) => {
-  var idProduct = req.body.IDPRODUCT;
-  var newDescription = req.body.DESCRIPTION;  
-  var sql = "UPDATE BB_product SET DESCRIPTION = :1 WHERE IDPRODUCT = :2";
+  var IDPRODUCT = req.body.IDPRODUCT;
+  var Description = req.body.DESCRIPTION;
 
-  try {
-    const result = await connection.execute(sql, [newDescription, idProduct], { autoCommit: true });
+  var sql = `
+  BEGIN
+    UpdateProductDescription(:1, :2);
+  END;
+`;
+
+try {
+  const result = await connection.execute(
+    sql,
+    [IDPRODUCT, Description],
+    { autoCommit: true }
+  );
+
+    console.log(`idProduct: ${IDPRODUCT}, Description: ${Description}`);
     console.log(result.rowsAffected + " record(s) updated");
-    res.send(result);
+    res.json({ rowsAffected: result.rowsAffected });
   } catch (err) {
     console.error(err);
     res.status(500).send(err);
+  }
+});
+
+app.get('/api/getProductidname', async (req, res) => {
+  try {
+    const result = await connection.execute(
+      `BEGIN getProductidname(:cursor); END;`,
+      {
+        cursor: { dir: oracledb.BIND_OUT, type: oracledb.CURSOR }
+      }
+    );
+
+    const resultSet = result.outBinds.cursor;
+    let row;
+    let rows = [];
+
+    while ((row = await resultSet.getRow())) {
+      rows.push(row);
+    }
+
+    await resultSet.close();
+
+    res.json(rows);
+  } catch (err) {
+    res.status(500).send(err.message);
   }
 });
 
