@@ -3,6 +3,8 @@ From root file run this to install dependencies:
 cd Client && npm install
 cd ../server && npm install
 
+#Place .env file sent on teams in server directory before running, or you will get errors#
+
 then run this to run the server & client
 cd ../Client
 npm run dev

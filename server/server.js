@@ -1,37 +1,47 @@
 var express = require('express');
+var cors = require('cors');
 var app = express();
-var mysql = require('mysql');
+var oracledb = require('oracledb');
+require('dotenv').config();
+app.use(cors());
 
-// Create a connection to your database
-var con = mysql.createConnection({
-  host: "oracle1.centennialcollege.ca",
-  user: "COMP214_W24_ers_3",
-  password: "######",// Replace with password once new one is recieved
-  database: "Dylan_Comp214_Winter24"
-});
+let connection;
 
-// Connect to the database
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected to the database!");
-});
+async function run() {
+  try {
+    connection = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    console.log('Successfully connected to Oracle!');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+run();
 
 // Use express.json() middleware to parse JSON bodies
 app.use(express.json());
-
 // Create a route to handle the POST request
-app.post('/api/updateProductDescription', function (req, res) {
-  var id = req.body.productId;
-  var newDescription = req.body.newDescription;
-  var sql = "UPDATE products SET description = ? WHERE id = ?";
-  
-  con.query(sql, [newDescription, id], function (err, result) {
-    if (err) throw err;
-    console.log(result.affectedRows + " record(s) updated");
+app.post('/api/updateProductDescription', cors(), async (req, res) => {
+  var idProduct = req.body.IDPRODUCT;
+  var newDescription = req.body.DESCRIPTION;  
+  var sql = "UPDATE BB_product SET DESCRIPTION = :1 WHERE IDPRODUCT = :2";
+
+  try {
+    const result = await connection.execute(sql, [newDescription, idProduct], { autoCommit: true });
+    console.log(result.rowsAffected + " record(s) updated");
     res.send(result);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
 });
 
-app.listen(3000, function () {
-  console.log('Server is running on port 3000');
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });

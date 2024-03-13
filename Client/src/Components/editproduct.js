@@ -5,25 +5,32 @@ function EditProduct() {
     const [newDescription, setNewDescription] = useState('');
   
     
-    const handleSubmit = () => {
-      fetch('http://localhost:3001/api/updateProductDescription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: productId,
-          newDescription: newDescription,
-        }),
-      })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-    };  
-      console.log(`Updating product ${productId} with new description: ${newDescription}`);
-  
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      fetch('http://localhost:3000/api/updateProductDescription', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            IDPRODUCT: productId,
+            DESCRIPTION: newDescription,
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          alert('Product Description updated');
+          setProductId('');
+          setNewDescription('');
+        })
+        .catch(error => console.error('Error:', error));
+  };
   
       return (
         <div className="shop-page">
