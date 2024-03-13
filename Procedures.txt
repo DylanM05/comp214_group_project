@@ -1,10 +1,20 @@
 CREATE OR REPLACE PROCEDURE UpdateProductDescription(
-  idProduct IN NUMBER,
+  p_IDPRODUCT IN NUMBER,
   newDescription IN VARCHAR2
 ) AS
 BEGIN
+  DBMS_OUTPUT.PUT_LINE('idProduct: ' || p_IDPRODUCT);
+
   UPDATE BB_product
   SET DESCRIPTION = newDescription
-  WHERE IDPRODUCT = idProduct;
+  WHERE IDPRODUCT = p_IDPRODUCT;
 END;
 /
+
+
+
+CREATE OR REPLACE PROCEDURE getProductidname(p_cursor OUT SYS_REFCURSOR) AS
+BEGIN
+    OPEN p_cursor FOR
+    SELECT idproduct, productname FROM BB_product;
+END;
