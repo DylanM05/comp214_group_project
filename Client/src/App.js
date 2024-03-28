@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import EditProduct from './Components/editproduct';
+import UpdateShipping from './Components/updateshipping';
 
 function App() {
   const [activePage, setActivePage] = useState('Departments');
@@ -14,7 +15,7 @@ function App() {
   <button onClick={() => setActivePage('Checkout')} className="nav-button">Checkout</button>
   <button onClick={() => setActivePage('Search')} className="nav-button">Search</button>
   <button onClick={() => setActivePage('Account')} className="nav-button">Account</button>
-  <button onClick={() => setActivePage('Orders Status')} className="nav-button">Orders Status</button>
+  <button onClick={() => setActivePage('Orders Status')} className="nav-button">Update Orders Status</button>
 </div>
       <div className="right-side">
         {activePage === 'Departments' && <div>Departments Page</div>}
@@ -23,7 +24,7 @@ function App() {
         {activePage === 'Checkout' && <div>Checkout Page</div>}
         {activePage === 'Search' && <div>Search Page</div>}
         {activePage === 'Account' && <div>Account Page</div>}
-        {activePage === 'Orders Status' && <div>Orders Status Page</div>}
+        {activePage === 'Orders Status' && <div><UpdateShipping /></div>}
       </div>
     </div>
   );

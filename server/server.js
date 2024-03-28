@@ -78,6 +78,62 @@ app.get('/api/getProductidname', async (req, res) => {
   }
 });
 
+//I broke the code down here to explain how to use Cursors via Javascript
+app.get('/api/idStatusOptions', async (req, res) => {
+  try {
+    let result;
+
+    // Execute the stored procedure
+    result = await connection.execute(
+      `BEGIN GET_IDSTATUS_OPTIONS(:options); END;`,
+      {
+        options: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT }
+      }
+    );
+
+    // Retrieve the cursor from the result
+    const cursor = result.outBinds.options;
+
+    // Fetch all rows from the cursor
+    const rows = await cursor.getRows();
+
+    // Extract the IDSTATUS values from the rows
+    const options = rows.map(row => row[0]);
+
+    // Close the cursor
+    await cursor.close();
+
+    // Send the options as JSON response
+    res.json(options);
+  } catch (error) {
+    console.error('Error fetching IDSTATUS options:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+app.post('/api/updateorder', async (req, res) => {
+  const { idstatus, idstage, date, notes, shipper, shipnum } = req.body; 
+  try {
+      await connection.execute(
+          `BEGIN STATUS_SHIP_SP(:p_idstatus, :p_idstage, :p_date, :p_notes, :p_shipper, :p_shipnum); END;`,
+          {
+              p_idstatus: idstatus,
+              p_idstage: idstage,
+              p_date: date,
+              p_notes: notes,
+              p_shipper: shipper,
+              p_shipnum: shipnum
+          }
+      );
+      res.send('Order Status has been updated successfully.');
+  } catch (error) {
+      console.error('Error updating shipping:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

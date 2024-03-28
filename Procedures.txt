@@ -1,3 +1,5 @@
+--UpdateProductDescription
+
 CREATE OR REPLACE PROCEDURE UpdateProductDescription(
   p_IDPRODUCT IN NUMBER,
   newDescription IN VARCHAR2
@@ -12,9 +14,53 @@ END;
 /
 
 
+--get Productid & name
 
 CREATE OR REPLACE PROCEDURE getProductidname(p_cursor OUT SYS_REFCURSOR) AS
 BEGIN
     OPEN p_cursor FOR
     SELECT idproduct, productname FROM BB_product;
+END;
+
+
+
+--Update Shipping status information
+
+CREATE OR REPLACE PROCEDURE STATUS_SHIP_SP (
+    p_idstatus IN NUMBER,
+    p_idstage IN NUMBER,
+    p_date IN DATE,
+    p_notes IN VARCHAR2,
+    p_shipper IN VARCHAR2,
+    p_shipnum IN VARCHAR2
+)
+IS
+    v_count NUMBER;
+BEGIN
+        UPDATE bb_basketstatus
+        SET idstage = p_idstage,
+            dtstage = p_date,
+            notes = p_notes,
+            shipper = p_shipper,
+            shippingnum = p_shipnum
+        WHERE idstatus = p_idstatus;
+    COMMIT;
+END STATUS_SHIP_SP;
+/
+
+--Gets IdStatus from BB_BASKETSTATUS table in order to make dropdown menu
+
+CREATE OR REPLACE PROCEDURE GET_IDSTATUS_OPTIONS (
+    p_options OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN p_options FOR
+    SELECT DISTINCT idstatus
+    FROM bb_basketstatus;
+END GET_IDSTATUS_OPTIONS;
+/
+
+BEGIN
+GET_IDSTATUS_OPTIONS();
 END;
