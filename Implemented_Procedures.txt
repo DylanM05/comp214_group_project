@@ -48,6 +48,24 @@ BEGIN
 END STATUS_SHIP_SP;
 /
 
+--Create new shipping status information
+
+CREATE OR REPLACE PROCEDURE STATUS_SHIP_NEW (
+    p_idstage IN NUMBER,
+    p_date IN DATE,
+    p_notes IN VARCHAR2,
+    p_shipper IN VARCHAR2,
+    p_shipnum IN VARCHAR2
+)
+IS
+BEGIN
+    INSERT INTO bb_basketstatus (idstatus, idbasket, idstage, dtstage, notes, shipper, shippingnum)
+    VALUES (bb_status_seq.NEXTVAL, NULL, p_idstage, p_date, p_notes, p_shipper, p_shipnum);
+    
+    COMMIT;
+END STATUS_SHIP_NEW;
+/
+
 --Gets IdStatus from BB_BASKETSTATUS table in order to make dropdown menu
 
 CREATE OR REPLACE PROCEDURE GET_IDSTATUS_OPTIONS (
@@ -64,3 +82,35 @@ END GET_IDSTATUS_OPTIONS;
 BEGIN
 GET_IDSTATUS_OPTIONS();
 END;
+
+--Get all Basket info to generate the page
+CREATE OR REPLACE PROCEDURE GetAllBaskets(p_cursor OUT SYS_REFCURSOR) AS
+BEGIN
+    OPEN p_cursor FOR
+    SELECT * FROM BB_Basket;
+END;
+
+
+--Calculate tax
+
+CREATE OR REPLACE FUNCTION tax_cost_sp (
+    state_code          bb_tax.state%TYPE,
+    subtotal            NUMBER
+)
+RETURN NUMBER IS
+    sv_tax_amt          NUMBER(7,2);
+    sv_tax_rate         NUMBER;
+BEGIN
+    
+    SELECT bt.taxrate INTO sv_tax_rate 
+    FROM bb_tax bt
+    WHERE bt.state = UPPER(state_code);    
+    sv_tax_amt := sv_tax_rate * subtotal;
+    RETURN sv_tax_amt;
+    
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            sv_tax_amt := 0;        
+        RETURN sv_tax_amt;
+
+END tax_cost_sp;

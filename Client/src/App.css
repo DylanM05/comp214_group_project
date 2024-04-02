@@ -33,7 +33,7 @@
 
 .right-side {
   display: grid; 
-  place-items: center; 
+  place-items: Top center; 
   flex-grow: 1;
   padding: 20px;
 }
@@ -99,3 +99,26 @@
   padding: '10px';
   border: '1px solid #ccc';
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+;
+  background-color: #f0f0f0;
+}
+
+.header img {
+  height: 100px;
+}
+
+.header h1 {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Cinzel, serif;
+}
+
+
+

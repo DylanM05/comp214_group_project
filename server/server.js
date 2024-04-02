@@ -133,6 +133,73 @@ app.post('/api/updateorder', async (req, res) => {
   }
 });
 
+app.post('/api/NewOrderStatus', async (req, res) => {
+  const { idStage, date, notes, shipper, shipNum } = req.body;
+  try {
+      await connection.execute(
+          `BEGIN STATUS_SHIP_NEW(:p_idstage, :p_date, :p_notes, :p_shipper, :p_shipnum); END;`,
+          {
+              p_idstage: idStage,
+              p_date: date,
+              p_notes: notes,
+              p_shipper: shipper,
+              p_shipnum: shipNum
+          }
+      );
+      res.send('Order status has been updated successfully.');
+  } catch (error) {
+      console.error('Error updating order status:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+
+
+app.get('/api/get_all_baskets', async (req, res) => {
+  try {
+    const result = await connection.execute(
+      `BEGIN GetAllBaskets(:cursor); END;`,
+      { cursor: { dir: oracledb.BIND_OUT, type: oracledb.CURSOR } }
+    );
+
+    const resultSet = result.outBinds.cursor;
+    let row;
+    const rows = [];
+
+    while ((row = await resultSet.getRow())) {
+      rows.push(row);
+    }
+
+    await resultSet.close();
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching all baskets:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+app.post('/api/calculate_tax', async (req, res) => {
+  try {
+    const { state_code, subtotal } = req.body;
+
+    const result = await connection.execute(
+      `BEGIN :ret := tax_cost_sp(:state_code, :subtotal); END;`,
+      {
+        ret: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+        state_code: { dir: oracledb.BIND_IN, val: state_code, type: oracledb.STRING },
+        subtotal: { dir: oracledb.BIND_IN, val: subtotal, type: oracledb.NUMBER }
+      }
+    );
+
+    res.json({ tax_amount: result.outBinds.ret });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
