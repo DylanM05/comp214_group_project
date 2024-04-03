@@ -222,6 +222,27 @@ app.get('/api/checkProductSale/:productId/:date', async (req, res) => {
   }
 });
 
+app.post('/api/addNewProduct', async (req, res) => {
+  const { productName, description, productImage, price, active } = req.body;
+  try {
+    await connection.execute(
+      `BEGIN prod_add_sp(NULL, :p_productName, :p_description, :p_productImage, :p_price, :p_active); END;`,
+      {
+        p_productName: productName,
+        p_description: description,
+        p_productImage: productImage,
+        p_price: price,
+        p_active: active
+      }
+    );
+    res.send('Product added successfully.');
+  } catch (error) {
+    console.error('Error adding new product:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 
 
 

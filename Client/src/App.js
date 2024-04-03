@@ -7,6 +7,7 @@ import NewShipping from './Components/newshipping';
 import logo from './Images/Logo.jpeg';
 import SaleChecker from './Components/salechecker';
 import Home from './Components/home';
+import NewProduct from './Components/newproduct';
 
 function App() {
   const [activePage, setActivePage] = useState('Home');
@@ -24,7 +25,7 @@ function App() {
         <button onClick={() => setActivePage('SaleCheck')} className="nav-button">Sale Checker</button>
         <button onClick={() => setActivePage('Checkout')} className="nav-button">Calculate Tax</button>
         <button onClick={() => setActivePage('Orders Status')} className="nav-button">Update Orders Status</button>
-        <button onClick={() => setActivePage('Search')} className="nav-button">Search</button>
+        <button onClick={() => setActivePage('Add Product')} className="nav-button">Add a new Product</button>
         <button onClick={() => setActivePage('Account')} className="nav-button">Account</button>
         <button onClick={() => setActivePage('Departments')} className="nav-button">Departments</button>
       </div>
@@ -43,7 +44,7 @@ function App() {
             </div>
           </div>
         )}
-        {activePage === 'Search' && <div>Search Page</div>}
+        {activePage === 'Add Product' && <NewProduct />}
         {activePage === 'Account' && <div>Account Page</div>}
         {activePage === 'Departments' && <div>Departments Page</div>}
       </div>

@@ -136,3 +136,33 @@ BEGIN
     WHERE idproduct = p_product_id;
     RETURN sv_sale_or_not;
 END;
+
+
+-- Add a new Product
+
+CREATE OR REPLACE PROCEDURE prod_add_sp (
+    p_productid IN NUMBER,
+    p_productName IN VARCHAR2,
+    p_description IN VARCHAR2,
+    p_productImage IN VARCHAR2,
+    p_price IN NUMBER,
+    p_active IN NUMBER
+    )
+IS
+BEGIN
+    --insert statement to add new product into the bb_product table
+    INSERT INTO bb_product (idproduct, productName, description, productImage, price, active)
+    VALUES (p_productid_seq.NEXTVAL, p_productName, p_description, p_productImage, p_price, p_active);
+    
+    -- Commit the transaction
+    COMMIT;
+    
+    -- Print message to show new product has been added successfully
+    DBMS_OUTPUT.PUT_LINE('Product added successfully.');
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Print the specific error message
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
