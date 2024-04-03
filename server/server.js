@@ -243,6 +243,51 @@ app.post('/api/addNewProduct', async (req, res) => {
 });
 
 
+app.get('/api/getbasketid', async (req, res) => {
+  try {
+    const result = await connection.execute(
+      `BEGIN getBasketID(:cursor); END;`,
+      { cursor: { dir: oracledb.BIND_OUT, type: oracledb.CURSOR } }
+    );
+
+    const resultSet = result.outBinds.cursor;
+    let row;
+    const rows = [];
+
+    while ((row = await resultSet.getRow())) {
+      rows.push(row);
+    }
+
+    await resultSet.close();
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching all baskets:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/api/addToBasket', async (req, res) => {
+  const { idproduct: idProduct, idbasket: idBasket, price, quantity, sizeCode, formCode } = req.body;
+
+  try {
+    await connection.execute(
+      `BEGIN basket_add_sp(NULL, :p_idProduct, :p_idBasket, :p_price, :p_quantity, :p_sizeCode, :p_formCode); END;`,
+      {
+        p_idProduct: idProduct,
+        p_idBasket: idBasket,
+        p_price: price,
+        p_quantity: quantity,
+        p_sizeCode: sizeCode,
+        p_formCode: formCode
+      }
+    );
+    res.send('Product added to basket successfully.');
+  } catch (error) {
+    console.error('Error adding product to basket:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 
 

@@ -166,3 +166,38 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
+
+
+--Get basket ID list
+
+CREATE OR REPLACE PROCEDURE getBasketID(p_cursor OUT SYS_REFCURSOR) AS
+BEGIN
+    OPEN p_cursor FOR
+    SELECT idbasket FROM BB_Basket;
+END;
+
+--Add Item to Basket
+
+CREATE OR REPLACE PROCEDURE basket_add_sp (
+    p_idBasketItem IN NUMBER,   -- id will be auto-generated
+    p_idProduct IN NUMBER,
+    p_idBasket IN NUMBER,
+    p_price IN NUMBER,
+    p_quantity IN NUMBER,
+    p_sizeCode IN NUMBER,
+    p_formCode IN NUMBER )
+IS
+BEGIN
+-- insert new item into bb_basketitem table
+    INSERT INTO bb_basketItem (idBasketItem, idProduct, idBasket, price, quantity, option1, option2)
+    VALUES (BB_IDBASKETITEM_SEQ.NEXTVAL, p_idProduct, p_idBasket, p_price, p_quantity, p_sizeCode, p_formCode);
+    --commit
+    COMMIT;
+    
+    -- When item is added successfully print a message stating so.
+    DBMS_OUTPUT.PUT_LINE('Item added to the basket.');
+EXCEPTION -- print error message if not added successfully.
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('There was an error adding the item to the basket. Please try again'); -- error message
+END;
+/
