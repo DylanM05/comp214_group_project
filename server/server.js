@@ -201,6 +201,30 @@ app.post('/api/calculate_tax', async (req, res) => {
 });
 
 
+app.get('/api/checkProductSale/:productId/:date', async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const date = req.params.date;
+
+    const result = await connection.execute(
+      `BEGIN :saleStatus := ck_sale_sf(:date, :productId); END;`,
+      {
+        saleStatus: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 15 },
+        date: date,
+        productId: productId
+      }
+    );
+
+    const saleStatus = result.outBinds.saleStatus;
+    res.json({ saleStatus });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

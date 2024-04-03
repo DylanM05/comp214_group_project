@@ -114,3 +114,25 @@ BEGIN
         RETURN sv_tax_amt;
 
 END tax_cost_sp;
+
+
+--Determine sale or not
+
+CREATE OR REPLACE FUNCTION ck_sale_sf (
+    p_date          VARCHAR2,
+    p_product_id    bb_product.idproduct%TYPE
+)
+RETURN VARCHAR2 IS
+    sv_sale_or_not     VARCHAR2(15);
+    sv_date         DATE            := TO_DATE(p_date,'YYYY-MM-DD');
+BEGIN
+    SELECT CASE
+        WHEN sv_date BETWEEN salestart AND saleend 
+            THEN 'SALE!'
+            ELSE 'GREAT DEAL'
+        END
+        INTO sv_sale_or_not
+    FROM bb_product
+    WHERE idproduct = p_product_id;
+    RETURN sv_sale_or_not;
+END;

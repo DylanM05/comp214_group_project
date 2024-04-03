@@ -37,8 +37,8 @@ function Checkout() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        state_code: selectedBasket[14], // Assuming SHIPCITY is at index 14
-        subtotal: subtotal, // Assuming SUBTOTAL is at index 4
+        state_code: selectedBasket[14], 
+        subtotal: subtotal, 
       }),
     });
   
@@ -52,7 +52,7 @@ function Checkout() {
       <form className="edit-form" onSubmit={handleSubmit}>
       <h2>Basket Tax Calculation Form</h2>
         <label>
-          Basket ID:
+          Basket ID:<br/>
           <select className="prod-id" value={selectedBasket?.[0] || ''} onChange={handleBasketChange}>
             {baskets.map(basket => (
               <option key={basket[0]} value={basket[0]}>
