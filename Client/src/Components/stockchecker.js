@@ -52,7 +52,7 @@ const StockChecker = () => {
   return (
     <div className='edit-form'>
       <h2>Stock Checker</h2>
-      <select value={selectedBasket} onChange={handleBasketChange}>
+      <select className="prod-id" value={selectedBasket} onChange={handleBasketChange}>
         <option value="">Select a Basket</option>
         {baskets.map((basket) => (
           <option key={basket[0]} value={basket[0]}>

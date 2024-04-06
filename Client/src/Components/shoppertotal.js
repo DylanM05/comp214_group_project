@@ -39,7 +39,7 @@ const ShopperTotal = () => {
   return (
     <div className='edit-form'>
       <h2>Total Purchase Page</h2>
-      <select value={selectedShopper} onChange={handleShopperChange}>
+      <select className="prod-id" value={selectedShopper} onChange={handleShopperChange}>
   <option value="">Select a Shopper</option>
   {shoppers.map((shopper) => (
     <option key={shopper} value={shopper}>
