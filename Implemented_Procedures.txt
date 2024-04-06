@@ -1,3 +1,62 @@
+Retreiving Data:
+
+--get Productid & name
+
+CREATE OR REPLACE PROCEDURE getProductidname(p_cursor OUT SYS_REFCURSOR) AS
+BEGIN
+    OPEN p_cursor FOR
+    SELECT idproduct, productname FROM BB_product;
+END;
+
+--Gets IdStatus from BB_BASKETSTATUS table in order to make dropdown menu
+
+CREATE OR REPLACE PROCEDURE GET_IDSTATUS_OPTIONS (
+    p_options OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN p_options FOR
+    SELECT DISTINCT idstatus
+    FROM bb_basketstatus;
+END GET_IDSTATUS_OPTIONS;
+/
+
+BEGIN
+GET_IDSTATUS_OPTIONS();
+END;
+
+--Get all Basket info to generate the page
+CREATE OR REPLACE PROCEDURE GetAllBaskets(p_cursor OUT SYS_REFCURSOR) AS
+BEGIN
+    OPEN p_cursor FOR
+    SELECT * FROM BB_Basket;
+END;
+
+--Get basket ID list
+
+CREATE OR REPLACE PROCEDURE getBasketID(p_cursor OUT SYS_REFCURSOR) AS
+BEGIN
+    OPEN p_cursor FOR
+    SELECT idbasket FROM BB_Basket;
+END;
+
+--Get Shopper ID
+CREATE OR REPLACE PROCEDURE get_shoppers_sp (
+    p_shoppers OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN p_shoppers FOR
+    SELECT IDSHOPPER FROM BB_SHOPPER;
+END;
+/
+
+
+
+###################################
+Important procedures:
+
+
 --UpdateProductDescription
 
 CREATE OR REPLACE PROCEDURE UpdateProductDescription(
@@ -12,15 +71,6 @@ BEGIN
   WHERE IDPRODUCT = p_IDPRODUCT;
 END;
 /
-
-
---get Productid & name
-
-CREATE OR REPLACE PROCEDURE getProductidname(p_cursor OUT SYS_REFCURSOR) AS
-BEGIN
-    OPEN p_cursor FOR
-    SELECT idproduct, productname FROM BB_product;
-END;
 
 
 
@@ -66,29 +116,6 @@ BEGIN
 END STATUS_SHIP_NEW;
 /
 
---Gets IdStatus from BB_BASKETSTATUS table in order to make dropdown menu
-
-CREATE OR REPLACE PROCEDURE GET_IDSTATUS_OPTIONS (
-    p_options OUT SYS_REFCURSOR
-)
-AS
-BEGIN
-    OPEN p_options FOR
-    SELECT DISTINCT idstatus
-    FROM bb_basketstatus;
-END GET_IDSTATUS_OPTIONS;
-/
-
-BEGIN
-GET_IDSTATUS_OPTIONS();
-END;
-
---Get all Basket info to generate the page
-CREATE OR REPLACE PROCEDURE GetAllBaskets(p_cursor OUT SYS_REFCURSOR) AS
-BEGIN
-    OPEN p_cursor FOR
-    SELECT * FROM BB_Basket;
-END;
 
 
 --Calculate tax
@@ -168,14 +195,6 @@ END;
 /
 
 
---Get basket ID list
-
-CREATE OR REPLACE PROCEDURE getBasketID(p_cursor OUT SYS_REFCURSOR) AS
-BEGIN
-    OPEN p_cursor FOR
-    SELECT idbasket FROM BB_Basket;
-END;
-
 --Add Item to Basket
 
 CREATE OR REPLACE PROCEDURE basket_add_sp (
@@ -201,3 +220,51 @@ EXCEPTION -- print error message if not added successfully.
         DBMS_OUTPUT.PUT_LINE('There was an error adding the item to the basket. Please try again'); -- error message
 END;
 /
+
+
+
+--Report for items in stock
+
+CREATE OR REPLACE PROCEDURE in_stock_or_not
+(
+    p_basket_num        IN  NUMBER,
+    p_items_in_stock    OUT VARCHAR2
+)
+AS
+    CURSOR cur_basket IS 
+        SELECT bi.idBasket, bi.quantity, p.stock
+        FROM bb_basketitem bi INNER JOIN bb_product p
+        USING (idProduct)
+        WHERE bi.idBasket = p_basket_num;
+
+    TYPE type_basket IS RECORD (
+        basket bb_basketitem.idBasket%TYPE,
+        qty bb_basketitem.quantity%TYPE,
+        stock bb_product.stock%TYPE
+        );
+        
+    rec_basket type_basket;
+    lv_flag_txt CHAR(1) := 'Y';
+BEGIN
+    FOR rec_basket IN cur_basket
+    LOOP
+        IF rec_basket.stock < rec_basket.quantity THEN lv_flag_txt := 'N'; END IF;
+    END LOOP;
+    IF lv_flag_txt = 'Y' THEN p_items_in_stock := 'Y'; END IF;
+    IF lv_flag_txt = 'N' THEN p_items_in_stock := 'N'; END IF;
+END;
+
+
+-- Returns total of all baskets for a given shopper id
+CREATE OR REPLACE FUNCTION tot_purch_sf (
+        p_idshopper bb_basket.idbasket%TYPE
+    ) 
+    RETURN NUMBER IS
+        sv_total NUMBER;
+BEGIN
+    SELECT SUM(TOTAL) INTO sv_total
+    FROM bb_basket
+    WHERE idshopper = p_idshopper;
+    
+    RETURN sv_total;
+END;

@@ -9,6 +9,8 @@ import SaleChecker from './Components/salechecker';
 import Home from './Components/home';
 import NewProduct from './Components/newproduct';
 import AddToBasket from './Components/AddToBasket';
+import StockChecker from './Components/stockchecker';
+import ShopperTotal from './Components/shoppertotal';
 
 function App() {
   const [activePage, setActivePage] = useState('Home');
@@ -28,6 +30,8 @@ function App() {
         <button onClick={() => setActivePage('Orders Status')} className="nav-button">Update Orders Status</button>
         <button onClick={() => setActivePage('Add Product')} className="nav-button">Add a new Product</button>
         <button onClick={() => setActivePage('Add to Basket')} className="nav-button">Add to Basket</button>
+        <button onClick={() => setActivePage('Stock Checker')} className="nav-button">Check if items are in stock</button>
+        <button onClick={() => setActivePage('Shoppers total')} className="nav-button">Shoppers total</button>
       </div>
       <div className="right-side">
         {activePage === 'Home' && <Home />}
@@ -46,6 +50,8 @@ function App() {
         )}
         {activePage === 'Add Product' && <NewProduct />}
         {activePage === 'Add to Basket' && <AddToBasket />}
+        {activePage === 'Stock Checker' && <StockChecker />}
+        {activePage === 'Shoppers total' && <ShopperTotal />}
       </div>
     </div>
     </>
