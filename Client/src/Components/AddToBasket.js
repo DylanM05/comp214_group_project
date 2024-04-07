@@ -40,6 +40,19 @@ function AddToBasket() {
       .catch(error => console.error('Error fetching basket IDs:', error));
   };
 
+  const handleProductChange = (e) => {
+    setProductId(e.target.value);
+    fetchProductPrice(e.target.value);
+  };
+
+  const fetchProductPrice = (id) => {
+    axios.get(`http://localhost:3000/api/getProductPrice/${id}`)
+      .then(response => {
+        setPrice(response.data.price);
+      })
+      .catch(error => console.error('Error fetching product price:', error));
+  };
+
   const handleAddToBasket = () => {
     axios.post('http://localhost:3000/api/addToBasket', {
       idproduct: Number(idproduct),
@@ -57,13 +70,13 @@ function AddToBasket() {
     <div className='edit-form'>
       <h1>Add Product To a Basket</h1>
       <div>
-        <label htmlFor="productSelect">Select Product:</label>
+      <label htmlFor="productSelect">Select Product:</label>
         <br />
         <select
-        id="productSelect"
-        className="prod-id"
+          id="productSelect"
+          className="prod-id"
           value={idproduct}
-          onChange={e => setProductId(e.target.value)}
+          onChange={handleProductChange}
         >
           {products.map(product => (
             <option key={product[0]} value={product[0]}>
@@ -92,9 +105,9 @@ function AddToBasket() {
         <label htmlFor="priceInput">Price:</label>
         <br />
         <input
-          type="number"
           id="priceInput"
           value={price}
+          readOnly
           onChange={e => setPrice(e.target.value)}
         />
       </div>

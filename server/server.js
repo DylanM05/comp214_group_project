@@ -27,6 +27,7 @@ app.use(express.json());
 
 
 //Get Requests
+//############################################################################################################
 app.get('/api/getProductidname', async (req, res) => {
   try {
     const result = await connection.execute(
@@ -223,8 +224,27 @@ app.get('/api/get_total_purchase/:shopperId', async (req, res) => {
 });
 
 
+app.get('/api/getProductPrice/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log(`Received request for product ID: ${id}`);
+  try {
+    const result = await connection.execute(
+      `SELECT PRICE FROM BB_PRODUCT WHERE IDPRODUCT = :id`,
+      { id }
+    );
+    console.log(`Query result: ${JSON.stringify(result)}`);
+    const price = result.rows[0][0];
+    res.json({ price });
+  } catch (error) {
+    console.error('Error fetching product price:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 
 // Post Requests
+//############################################################################################################
 
 // Create a route to handle the POST request
 app.post('/api/updateProductDescription', cors(), async (req, res) => {

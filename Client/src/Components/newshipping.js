@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -22,9 +22,11 @@ const NewShipping = () => {
                 shipNum
             });
             setMessage(response.data);
+            alert('Shipping Status created successfully');
             clearForm();
         } catch (error) {
             setMessage('Error occurred while processing the request.');
+            alert('Error occurred while processing the request.'); 
             console.error(error);
         }
     };
@@ -37,7 +39,6 @@ const NewShipping = () => {
         setShipNum('');
     };
 
-    // Function to format the date as 'DD-MON-YY'
     const formatDate = (date) => {
         const options = { year: '2-digit', month: 'short', day: '2-digit' };
         return new Intl.DateTimeFormat('en-GB', options).format(date);

@@ -19,7 +19,7 @@ function EditProduct() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
     fetch('http://localhost:3000/api/updateProductDescription', {
       method: 'POST',
       headers: {
@@ -33,9 +33,11 @@ function EditProduct() {
       .then(response => response.json())
       .then(data => {
         console.log(data);
+        alert('Update successful'); 
       })
       .catch(error => {
         console.error('Error:', error);
+        alert('Update failed'); 
       });
   };
 

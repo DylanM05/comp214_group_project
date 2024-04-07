@@ -66,8 +66,8 @@ function Checkout() {
             <p>Quantity: {selectedBasket[1]}</p>
             <p>Subtotal: {selectedBasket[4]}</p>
             <p>Shipping: {selectedBasket[6]}</p>
-            <p>Ship City: {selectedBasket[14]}</p>
-            <p>Ship State: {selectedBasket[15]}</p>
+            <p>Ship State: {selectedBasket[14]}</p>
+            <p>Zip Code: {selectedBasket[15]}</p>
           </>
         )}
         <button className="submit-button" type="submit">Calculate Tax</button>

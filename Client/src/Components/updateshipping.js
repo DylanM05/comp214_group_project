@@ -39,7 +39,10 @@ const UpdateShipping = () => {
                 shipnum: shipNum
             });
             setMessage(response.data);
-
+    
+            // Display a popup message when the update is successful
+            alert('Shipping status updated successfully');
+    
             clearForm();
         } catch (error) {
             setMessage('Error occurred while processing the request.');
